@@ -134,14 +134,10 @@ TEST_CASE("Same card number but different PINs are different accounts",
   REQUIRE(accounts[{55555555, 2222}].owner_name == "Frank");
 }
 
-TEST_CASE("Print ledger for account with no transactions",
-          "[ex-empty-ledger]") {
+TEST_CASE("Print ledger for non-existent account throws", "[ex-bad-ledger]") {
   Atm atm;
-  atm.RegisterAccount(66666666, 3333, "Grace", 200.0);
-  atm.PrintLedger("empty-ledger.txt", 66666666, 3333);
-
-  std::ifstream f("empty-ledger.txt");
-  REQUIRE(f.good());
+  REQUIRE_THROWS_AS(atm.PrintLedger("bad-ledger.txt", 12345678, 4321),
+                    std::invalid_argument);
 }
 
 TEST_CASE("Large deposit should update balance correctly", "[ex-large]") {
