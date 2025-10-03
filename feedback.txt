@@ -6,7 +6,7 @@
 
 4. Your test suite properly identified an incorrect solution!
 
-5. Your test suite did not perform as expected.
-HINT: Should we be printing a ledger for an account that doesn't exist?
+5. Your test suite properly identified an incorrect solution!
 
-score: 4/5
+score: 5/5
+Your test suite identified all bugs present!
