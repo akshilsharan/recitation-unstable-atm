@@ -74,3 +74,37 @@ TEST_CASE("Example: Print Prompt Ledger", "[ex-3]") {
   atm.PrintLedger("./prompt.txt", 12345678, 1234);
   REQUIRE(CompareFiles("./ex-1.txt", "./prompt.txt"));
 }
+
+// my_test_cases
+
+TEST_CASE("Register duplicate account throws exception", "[ex-dup]") {
+  Atm atm;
+  atm.RegisterAccount(11111111, 2222, "Alice", 100.0);
+  REQUIRE_THROWS_AS(atm.RegisterAccount(11111111, 2222, "Alice", 200.0),
+                    std::invalid_argument);
+}
+
+TEST_CASE("Withdraw more than balance throws exception", "[ex-overdraft]") {
+  Atm atm;
+  atm.RegisterAccount(22222222, 3333, "Bob", 50.0);
+  REQUIRE_THROWS_AS(atm.WithdrawCash(22222222, 3333, 100.0),
+                    std::runtime_error);
+}
+
+TEST_CASE("Negative withdrawal and deposit throw exception", "[ex-negative]") {
+  Atm atm;
+  atm.RegisterAccount(33333333, 4444, "Carol", 500.0);
+
+  REQUIRE_THROWS_AS(atm.WithdrawCash(33333333, 4444, -50.0),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(atm.DepositCash(33333333, 4444, -25.0),
+                    std::invalid_argument);
+}
+
+TEST_CASE("CheckBalance or Withdraw on non-existent account throws",
+          "[ex-invalid-account]") {
+  Atm atm;
+  REQUIRE_THROWS_AS(atm.CheckBalance(99999999, 1234), std::invalid_argument);
+  REQUIRE_THROWS_AS(atm.WithdrawCash(99999999, 1234, 10.0),
+                    std::invalid_argument);
+}
