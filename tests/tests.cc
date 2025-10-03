@@ -145,5 +145,6 @@ TEST_CASE("Large deposit should update balance correctly", "[ex-large]") {
   Atm atm;
   atm.RegisterAccount(77777777, 4444, "Henry", 10.0);
   atm.DepositCash(77777777, 4444, 1e9);  // Deposit 1 billion
+  // test
   REQUIRE(atm.CheckBalance(77777777, 4444) == Approx(1000000010.0));
 }
