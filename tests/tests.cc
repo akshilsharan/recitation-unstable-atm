@@ -108,3 +108,42 @@ TEST_CASE("CheckBalance or Withdraw on non-existent account throws",
   REQUIRE_THROWS_AS(atm.WithdrawCash(99999999, 1234, 10.0),
                     std::invalid_argument);
 }
+
+TEST_CASE("Zero deposit and withdrawal should throw exception", "[ex-zero]") {
+  Atm atm;
+  atm.RegisterAccount(44444444, 5555, "Dave", 100.0);
+  REQUIRE_THROWS_AS(atm.DepositCash(44444444, 5555, 0.0),
+                    std::invalid_argument);
+  REQUIRE_THROWS_AS(atm.WithdrawCash(44444444, 5555, 0.0),
+                    std::invalid_argument);
+}
+
+TEST_CASE("Same card number but different PINs are different accounts",
+          "[ex-multi-pin]") {
+  Atm atm;
+  atm.RegisterAccount(55555555, 1111, "Eve", 50.0);
+  atm.RegisterAccount(55555555, 2222, "Frank", 75.0);
+
+  auto accounts = atm.GetAccounts();
+  REQUIRE(accounts.size() == 2);
+  REQUIRE(accounts[{55555555, 1111}].owner_name == "Eve");
+  REQUIRE(accounts[{55555555, 2222}].owner_name == "Frank");
+}
+
+TEST_CASE("Print ledger for account with no transactions",
+          "[ex-empty-ledger]") {
+  Atm atm;
+  atm.RegisterAccount(66666666, 3333, "Grace", 200.0);
+  atm.PrintLedger("empty-ledger.txt", 66666666, 3333);
+
+  // File should exist, even if it's minimal
+  std::ifstream f("empty-ledger.txt");
+  REQUIRE(f.good());
+}
+
+TEST_CASE("Large deposit should update balance correctly", "[ex-large]") {
+  Atm atm;
+  atm.RegisterAccount(77777777, 4444, "Henry", 10.0);
+  atm.DepositCash(77777777, 4444, 1e9);  // Deposit 1 billion
+  REQUIRE(atm.CheckBalance(77777777, 4444) == Approx(1000000010.0));
+}
